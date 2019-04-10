@@ -1,0 +1,240 @@
+<html>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+
+<script> 
+var canvas; 
+var canvasContext;
+var ballX = 50;
+var ballY = 50;
+var ballSpeedX = 5;
+var ballSpeedY = 1;
+
+var showingWinScreen = false;
+
+var player1Score = 0;
+var player2Score = 0;
+const WINNING_SCORE = 3;
+const GAME_DIFFICULTY = 10;
+
+
+
+var paddleY1= 100;
+var paddleY2= 200;
+
+var paddle1Y = 250;
+var paddle2Y = 250;
+const PADDLE_THICKNESS = 5;
+const PADDLE_HEIGHT = 100;
+
+function calculateMousePos(evt){
+    var rect = canvas.getBoundingClientRect();
+    var root = document.documentElement;
+    var mouseX = evt.clientX - rect.left - root.scrollLeft;
+    var mouseY = evt.clientY - rect.top - root.scrollTop;
+    return {
+        x:mouseX,
+        y:mouseY
+    };
+}
+
+function handleMouseClick(evt){
+    if(showingWinScreen){
+        player1Score =0; 
+        player2Score =0;
+        showingWinScreen = false;
+    }
+}
+
+  window.onload = function() {  
+	canvas = document.getElementById('gameCanvas'); 
+	canvasContext = canvas.getContext('2d'); 
+	var framesPerSecond = 60
+	setInterval(function() { 
+		moveEverything();
+		onScreen();
+		drawEverything();
+	}, 1000/framesPerSecond);
+    setInterval(function(){
+    ai();
+    },30)
+    
+    canvas.addEventListener('mousedown',handleMouseClick);
+    
+    canvas.addEventListener('mousemove',
+        function(evt){
+            var mousePos = calculateMousePos(evt);
+            paddle1Y=mousePos.y-(PADDLE_HEIGHT/2);
+    });
+}
+function ai(){
+    var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
+    if(paddle2YCenter < ballY-25){
+        paddle2Y = paddle2Y+GAME_DIFFICULTY;
+    } else if(paddle2YCenter > ballY+25){
+        paddle2Y = paddle2Y-GAME_DIFFICULTY;
+    }
+}
+//moves all of the objects
+function moveEverything () {
+    
+    if(showingWinScreen){
+        return
+    }    
+        
+	ballX = ballX + ballSpeedX;
+	ballY = ballY + ballSpeedY;
+    if(ballY >= canvas.width){
+        ballSpeedX=-ballSpeedX
+    }
+            if(ballX < 25) {
+                if(ballY > paddle1Y &&
+                    ballY < paddle1Y+PADDLE_HEIGHT){
+                    ballSpeedX = -ballSpeedX;
+                    
+                    var deltaY = ballY
+                                -(paddle1Y+PADDLE_HEIGHT/2);
+                                ballSpeedY =deltaY * 0.25;
+                    }
+                    else{
+                        player2Score ++; 
+                        ballReset();
+                        
+                                }
+            }
+            if(ballX > canvas.width-30) {
+                if(ballY > paddle2Y &&
+                    ballY < paddle2Y+PADDLE_HEIGHT){
+                    ballSpeedX = -ballSpeedX
+                        var deltaY = ballY
+                                -(paddle2Y+PADDLE_HEIGHT/2);
+                                ballSpeedY =deltaY * 0.25;
+                    }
+                    else{
+                        player1Score ++; 
+                        ballReset();
+                    }
+            }
+//use this method for making the ball reset not only one direction 
+        if (ballY > canvas.width - 10) {
+		  ballSpeedY = -ballSpeedY;
+	}
+	   if (ballY < 0) {
+		  ballSpeedY = -ballSpeedY
+	   }
+    }
+//the shortened version of canvasContext.fillstyle = 'color';
+
+function drawEverything(){
+	colorRect(0,0,canvas.width,canvas.height, 'black');
+    if(player1score=1){
+    colorRect(0,)
+    }
+     if(showingWinScreen){
+             canvasContext.fillStyle = 'white';
+
+     
+        if(player1Score >= WINNING_SCORE){
+                 canvasContext.fillText("Very Good Job Human! You Have Beat The Computer",300,100,);
+                 canvasContext.fillText("The Game Has Come to an End You Can Click To Restart",300,300,);
+        return;
+        
+
+        }else if(player2Score >= WINNING_SCORE){
+         canvasContext.fillText("What A Shame The Computer Has Once Again Beat Us Humans",280,100,);
+         canvasContext.fillText("The Game Has Come to an End You Can Click To Restart",300,300,);
+        return;
+        }
+        
+    
+    }
+
+//this is paddle 1
+	colorRect(10, paddle1Y,PADDLE_THICKNESS ,PADDLE_HEIGHT, 'green'); 
+//this is paddle 2
+	colorRect(780,paddle2Y, PADDLE_THICKNESS ,PADDLE_HEIGHT, 'Purple');
+   
+
+   canvasContext.fillText(player1Score,100,100,40);
+   
+   canvasContext.fillText(player2Score,canvas.width-100,100);
+   
+//codes for white line horizontally positioned on the canvas
+
+//makes the net in the middle
+var line= 0;
+
+    while(line<=600){
+        line+=30;
+        colorRect(400,line,5,25,'Blue');   
+}
+colorRect(400,0,5,25,'Blue');
+
+//function that codes for ball
+
+	colorCircle(ballX, ballY, 10, 'red');
+}
+
+function colorCircle(centerX, centerY, radius, drawColor) {
+
+//code used for making a circle
+
+	canvasContext.fillStyle = drawColor;
+	canvasContext.beginPath();
+	canvasContext.arc(centerX,centerY,radius,0,Math.PI*2, true);
+	canvasContext.fill();
+
+}
+function colorRect(leftX, topY, width, height, drawColor) {
+	canvasContext.fillStyle = drawColor;
+	canvasContext.fillRect(leftX, topY, width, height,); 
+}
+function onScreen() {
+	if(ballY > 590) {
+		ballSpeedY = -ballSpeedY
+	}
+	}
+               if(ballX >canvas.width) {
+                if(ballY > paddle2Y &&
+                    ballY < paddle2Y+PADDLE_HEIGHT){
+                    ballSpeedX = -ballSpeedX
+                        var deltaY = ballY
+                                -(paddle2Y+PADDLE_HEIGHT/2);
+                                ballSpeedY =deltaY * 0.25;
+                    }
+                    else{
+                        player1Score ++; 
+                        ballReset();
+                    }
+            }
+
+        
+function ballReset(){
+    if (player1Score >= WINNING_SCORE || 
+        player2Score >= WINNING_SCORE){
+                showingWinScreen = true;
+       }
+	ballSpeedX = -ballSpeedX;
+    ballSpeedY = -ballSpeedY;
+    ballSpeedX = 5;
+    ballSpeedY = 1;
+	ballX = canvas.width/2
+	ballY = canvas.height/2
+ 
+} 
+	if(ballY  > paddle1Y && ballY < ballY+PADDLE_HEIGHT){
+		ballsSpeedX=-ballSpeedX
+}
+		ballReset();
+	if (ballX < 0) {
+	ballReset();
+	}	if (ballY > canvas.width - 10) {
+		ballSpeedY = -ballSpeedY;
+	}
+    
+
+
+
+
+</script>
+
+</html>
